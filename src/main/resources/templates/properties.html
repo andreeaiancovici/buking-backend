@@ -35,7 +35,16 @@
         </div>
     </div>
 </div>
+
 <div class="container mt-5">
+    <div class="row mb-4">
+                <div class="col-12">
+                    <form class="d-flex" role="search" method="GET" th:action="@{/properties}">
+                        <input class="form-control me-2" type="search" placeholder="Search for properties, cities..." aria-label="Search" th:value="${searchQuery}">
+                        <button class="btn btn-primary" type="submit">Search</button>
+                    </form>
+                </div>
+            </div>
     <div class="row">
         <div class="col-md-4" th:each="property : ${properties}">
             <div class="card mb-4">
