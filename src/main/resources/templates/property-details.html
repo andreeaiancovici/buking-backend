@@ -83,6 +83,9 @@
                         <h3 th:text="${'€' + room.pricePerNight}">Price</h3>
                         <p>per night</p>
                     </div>
+                    <form th:action="@{'/book/room/' + ${room.id}}" method="post">
+                        <button type="submit" class="btn btn-primary">Book Now</button>
+                    </form>
                     <!--<button class="btn btn-primary">Book Now</button>-->
                 </div>
             </div>

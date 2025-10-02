@@ -40,3 +40,42 @@ VALUES ('101', 'STANDARD', 199.99, 2, 1, 'https://images.unsplash.com/photo-1631
        ('L1', 'CABIN', 199.99, 2, 3, 'https://images.unsplash.com/photo-1602002418082-a4443e081dd1'),
        ('L2', 'LUXURY CABIN', 299.99, 4, 3, 'https://images.unsplash.com/photo-1598928506311-c55ded91a20c'),
        ('L3', 'MOUNTAIN SUITE', 399.99, 6, 3, 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461');
+
+CREATE TABLE users
+(
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR2(50),
+    name VARCHAR2(50)
+);
+
+INSERT INTO users ( email, name)
+VALUES  ('ana.popescu@example.com', 'Ana Popescu'),
+        ('ion.ionescu@example.com', 'Ion Ionescu'),
+        ('maria.stan@example.com', 'Maria Stan'),
+        ('andrei.george@example.com', 'Andrei George'),
+        ('elena.dumitru@example.com', 'Elena Dumitru');
+
+CREATE TABLE bookings
+(
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    check_in VARCHAR2(20),
+    check_out VARCHAR2(20),
+    user_id BIGINT,
+    property_id BIGINT,
+    room_id BIGINT,
+    price float,
+    FOREIGN KEY (user_id) references users(id),
+    FOREIGN KEY (property_id) REFERENCES property (id),
+    FOREIGN KEY (room_id) references room(id)
+
+);
+
+insert into bookings( check_in, check_out, user_id, property_id, room_id,price)
+values ('2025-10-05', '2025-10-10', 1, 1, 1,250),  -- Ana Popescu la Hilton, camera 101
+       ('2025-11-01', '2025-11-05', 2, 1, 2,500),  -- Ion Ionescu la Hilton, camera 102
+       ('2025-12-20', '2025-12-27', 3, 2, 4,300),  -- Maria Stan la Seaside, camera A101
+       ('2026-01-15', '2026-01-18', 4, 2, 5,290),  -- Andrei George la Seaside, camera A102
+       ('2026-02-10', '2026-02-14', 5, 2, 6,890),  -- Elena Dumitru la Seaside, camera B201
+       ('2026-03-01', '2026-03-07', 1, 3, 7,400),  -- Ana Popescu la Mountain Lodge, cabina L1
+       ('2026-04-12', '2026-04-15', 2, 3, 8,350),  -- Ion Ionescu la Mountain Lodge, cabina L2
+       ('2026-05-20', '2026-05-25', 3, 3, 9,500);  -- Maria Stan la Mountain Lodge, Mountain Suite
