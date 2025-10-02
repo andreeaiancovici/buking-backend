@@ -83,14 +83,45 @@
                         <h3 th:text="${'€' + room.pricePerNight}">Price</h3>
                         <p>per night</p>
                     </div>
-                    <form th:action="@{'/book/room/' + ${room.id}}" method="post">
-                        <button type="submit" class="btn btn-primary">Book Now</button>
-                    </form>
-                    <!--<button class="btn btn-primary">Book Now</button>-->
+                    <button
+                            class="btn btn-primary book-now-btn"
+                            th:data-room-id="${room.id}"
+                            th:data-property-id="${property.id}"
+                            th:data-price="${room.pricePerNight}">
+                        Book Now
+                    </button>
                 </div>
+
             </div>
         </div>
     </div>
 </div>
 </body>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const bookButtons = document.querySelectorAll('.book-now-btn');
+
+        bookButtons.forEach(button => {
+            button.addEventListener('click', function() {
+
+                // 1. (Opțional) Extragem datele doar pentru mesaj
+                const roomId = this.getAttribute('data-room-id');
+                const roomType = this.closest('.room-card').querySelector('h4').textContent;
+
+                // 2. Afișează pop-up-ul de succes IMEDIAT
+                Swal.fire({
+                    title: 'Booked Successfully! ✅',
+                    text: 'Reservation for ' + roomType + ' (ID: ' + roomId + ') simulated.',
+                    icon: 'success',
+                    confirmButtonText: 'Great!'
+                });
+
+                // 3. Dezactivează butonul pentru a preveni multiple simulări
+                button.disabled = true;
+                button.textContent = 'Booked!';
+            });
+        });
+    });
+</script>
 </html>
