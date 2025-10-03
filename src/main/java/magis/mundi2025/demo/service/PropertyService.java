@@ -22,10 +22,6 @@ public class PropertyService {
     }
 
     public List<Property> getPropertyByAddress(String address) {
-            // Keep only the part after the last comma
-            String city = address.contains(",")
-                    ? address.substring(address.lastIndexOf(",") + 1).trim()
-                    : address.trim();
-            return propertyRepository.findByAddressContainingIgnoreCase(city);
+        return propertyRepository.findByAddressContainingIgnoreCase(address.trim());
     }
 }

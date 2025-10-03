@@ -8,4 +8,5 @@ import java.util.Optional;
 
 public interface PropertyRepository extends JpaRepository<Property, Long> {
     List<Property> findByAddressContainingIgnoreCase(String city);
+
 }
