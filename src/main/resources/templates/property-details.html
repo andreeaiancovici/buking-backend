@@ -37,14 +37,28 @@
             color: #febb02;
             font-size: 20px;
         }
+
+        .btn-primary:hover {
+            background-color: white;
+            color: black;
+            border: 1px solid black;
+        }
     </style>
 </head>
 <body>
 <div class="header">
     <div class="container">
         <div class="d-flex justify-content-between align-items-center">
-            <a href="/" class="logo">Buking.com</a>
+            <a href="/properties" class="logo">Buking.com</a>
+            <a href="/properties/bookings" class="btn btn-primary ms-3">Bookings</a>
         </div>
+        
+        <div style="height: 16px;"></div>
+
+        <form class="d-flex" method="get" action="/properties/search">
+            <input class="form-control me-2" type="search" name="query" placeholder="Search properties" aria-label="Search">
+            <button class="btn btn-outline-light" type="submit">Search</button>
+        </form>
     </div>
 </div>
 <div class="property-header">
@@ -83,11 +97,22 @@
                         <h3 th:text="${'€' + room.pricePerNight}">Price</h3>
                         <p>per night</p>
                     </div>
-                    <!--<button class="btn btn-primary">Book Now</button>-->
+                    <form method="post" action="/bookings">
+                        <input type="hidden" name="roomId" th:value="${room.id}" />
+                        <button type="submit" class="btn btn-primary">Book Now</button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<div id="back" style="text-align:center; margin-top: 20px; margin-bottom: 10px">
+
+    <footer>
+        <a href="#top" style="color: LightGray; text-decoration: none">Back to top</a>
+    </footer>
+</div>
+
 </body>
 </html>
