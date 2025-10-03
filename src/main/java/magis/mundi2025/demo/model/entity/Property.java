@@ -17,7 +17,7 @@ public class Property {
     private Integer starRating;
     private String imageUrl;
 
-    @OneToMany(mappedBy = "property")
+    @OneToMany(mappedBy = "property")//specifies a one to many relationship bewtween Property and Room
     private List<Room> rooms;
 
 //    @OneToMany(mappedBy = "hotel")

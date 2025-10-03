@@ -40,3 +40,24 @@ VALUES ('101', 'STANDARD', 199.99, 2, 1, 'https://images.unsplash.com/photo-1631
        ('L1', 'CABIN', 199.99, 2, 3, 'https://images.unsplash.com/photo-1602002418082-a4443e081dd1'),
        ('L2', 'LUXURY CABIN', 299.99, 4, 3, 'https://images.unsplash.com/photo-1598928506311-c55ded91a20c'),
        ('L3', 'MOUNTAIN SUITE', 399.99, 6, 3, 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461');
+
+-- Users table (renamed from "user")
+CREATE TABLE users
+(
+    id    BIGINT AUTO_INCREMENT PRIMARY KEY,
+    email VARCHAR(255) NOT NULL ,
+    name  VARCHAR(100) NOT NULL
+);
+
+-- Booking table
+CREATE TABLE booking
+(
+    id         BIGINT AUTO_INCREMENT PRIMARY KEY,
+    room_id    BIGINT NOT NULL,
+    user_id    BIGINT NOT NULL,
+    start_date DATE NOT NULL,
+    end_date   DATE NOT NULL,
+    FOREIGN KEY (room_id) REFERENCES room (id),
+    FOREIGN KEY (user_id) REFERENCES users (id),
+    CONSTRAINT booking_date_check CHECK (start_date < end_date)
+);

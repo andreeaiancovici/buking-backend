@@ -47,6 +47,7 @@
         </div>
     </div>
 </div>
+
 <div class="property-header">
     <div class="container">
         <h1 th:text="${property.name}">Property Name</h1>
@@ -83,11 +84,40 @@
                         <h3 th:text="${'€' + room.pricePerNight}">Price</h3>
                         <p>per night</p>
                     </div>
-                    <!--<button class="btn btn-primary">Book Now</button>-->
+                    <!-- Butonul trimite roomId la backend -->
+                    <button class="btn btn-primary mt-2"
+                            th:attr="data-room-id=${room.id}"
+                            onclick="bookRoom(this.getAttribute('data-room-id'))">
+                        Book Now
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+    async function bookRoom(roomId) {
+        try {
+            const response = await fetch('/api/book', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ roomId: roomId })
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                alert("Booking Created Successfully!\nBooking ID: " + result.id + "\nRoom ID: " + result.roomId);
+            } else {
+                alert("Failed to create booking. Please try again.");
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            alert("⚠️ An error occurred while booking.");
+        }
+    }
+</script>
 </body>
 </html>
