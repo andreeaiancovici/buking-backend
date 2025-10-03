@@ -32,4 +32,13 @@ public class PropertyController {
         var propertyDTO = propertyConverter.convertToDTO(property);
         return ResponseEntity.ok(propertyDTO);
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<PropertyDTO>> searchPropertiesByCity(@RequestParam String city) {
+        var properties = propertyService.searchPropertiesByCity(city);
+        var propertyDTOs = properties.stream()
+                .map(propertyConverter::convertToDTO)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(propertyDTOs);
+    }
 }
