@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.stream.Collectors;
 
@@ -32,5 +33,15 @@ public class PropertyViewController {
         var propertyDTO = propertyConverter.convertToDTO(property);
         model.addAttribute("property", propertyDTO);
         return "property-details";
+    }
+
+    @GetMapping("/properties/search/{address}")
+    public String searchPropertyByAddress(@PathVariable String address, Model model) {
+        var property = propertyService.getPropertyByAddress(address);
+        var propertyDTOs = property.stream()
+                .map(propertyConverter::convertToDTO)
+                .toList();
+        model.addAttribute("property", propertyDTOs.getFirst());
+        return "property-address"; // adjust your Thymeleaf template to handle list
     }
 }

@@ -32,4 +32,11 @@ public class PropertyController {
         var propertyDTO = propertyConverter.convertToDTO(property);
         return ResponseEntity.ok(propertyDTO);
     }
+
+    @GetMapping("/search/{address}")
+    public ResponseEntity<PropertyDTO> getPropertyByAddress(@PathVariable String address) {
+        var property = propertyService.getPropertyByAddress(address);
+        var propertyDTO = propertyConverter.convertToDTO(property.getFirst());
+        return ResponseEntity.ok(propertyDTO);
+    }
 }

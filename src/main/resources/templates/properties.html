@@ -6,12 +6,12 @@
     <style>
         .card-img-top {
             width: 100%;
-            height: 200px;  /* Fixed height */
-            object-fit: cover;  /* Maintains aspect ratio */
+            height: 200px; /* Fixed height */
+            object-fit: cover; /* Maintains aspect ratio */
         }
 
         .card {
-            height: 100%;  /* Makes all cards same height */
+            height: 100%; /* Makes all cards same height */
         }
 
         .header {
@@ -35,8 +35,29 @@
         </div>
     </div>
 </div>
+
 <div class="container mt-5">
+    <!--    <div class="row mb-4">-->
+    <!--                <div class="col-12">-->
+    <!--                    <form class="d-flex" role="search" method="GET" th:action="@{/properties}">-->
+    <!--                        <input class="form-control me-2" type="search" placeholder="Search for properties, cities..." aria-label="Search" th:value="${searchQuery}">-->
+    <!--                        <button class="btn btn-primary" type="submit">Search</button>-->
+    <!--                    </form>-->
+    <!--                </div>-->
+    <!--            </div>-->
     <div class="row">
+        <div class="row mb-4">
+            <div class="col-12">
+                <form class="d-flex" role="search" onsubmit="event.preventDefault(); searchRedirect();">
+                    <input id="searchInput"
+                           class="form-control me-2"
+                           type="search"
+                           placeholder="Search for properties, cities..."
+                           aria-label="Search">
+                    <button class="btn btn-primary" type="submit">Search</button>
+                </form>
+            </div>
+        </div>
         <div class="col-md-4" th:each="property : ${properties}">
             <div class="card mb-4">
                 <img th:src="${property.imageUrl}" class="card-img-top" alt="Property Image">
@@ -54,5 +75,14 @@
         </div>
     </div>
 </div>
+<script>
+    function searchRedirect() {
+        const query = document.getElementById("searchInput").value;
+        if (query.trim() !== "") {
+            // Redirect to /properties/search/{city}
+            window.location.href = "/properties/search/" + encodeURIComponent(query.trim());
+        }
+    }
+</script>
 </body>
 </html>
