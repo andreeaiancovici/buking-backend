@@ -67,23 +67,41 @@
     </div>
 
     <h3 class="mt-4">Available Rooms</h3>
+    <p class="text-muted" th:text="${checkIn} + ' → ' + ${checkOut} + ' · ' + ${guests} + ' guests'"></p>
+    <div class="alert alert-success" th:if="${booked}">Your reservation is confirmed.</div>
+    <div class="alert alert-danger" th:if="${error}">That room was just taken. Choose another one.</div>
+
     <div class="room-list">
         <div th:each="room : ${property.rooms}" class="room-card">
             <div class="row">
                 <div class="col-md-3">
                     <img th:src="${room.imageUrl}" class="room-image" alt="Room Image">
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-5">
                     <h4 th:text="${room.roomType}">Room Type</h4>
                     <p>Room Number: <span th:text="${room.roomNumber}"></span></p>
                     <p>Capacity: <span th:text="${room.capacity}"></span> guests</p>
                 </div>
-                <div class="col-md-3 text-end">
+                <div class="col-md-4 text-end">
                     <div class="price-tag">
                         <h3 th:text="${'€' + room.pricePerNight}">Price</h3>
                         <p>per night</p>
                     </div>
-                    <!--<button class="btn btn-primary">Book Now</button>-->
+
+                    <div th:if="${availableRoomIds.contains(room.id)}">
+                        <form method="post" th:action="@{/bookings}">
+                            <input type="hidden" name="roomId" th:value="${room.id}">
+                            <input type="hidden" name="propertyId" th:value="${property.id}">
+                            <input type="hidden" name="checkIn" th:value="${checkIn}">
+                            <input type="hidden" name="checkOut" th:value="${checkOut}">
+                            <input type="hidden" name="guests" th:value="${guests}">
+                            <input type="text" name="guestName" class="form-control mb-2" placeholder="Your name" required>
+                            <button type="submit" class="btn btn-primary">Reserve</button>
+                        </form>
+                    </div>
+                    <span class="text-muted" th:unless="${availableRoomIds.contains(room.id)}">
+                        Not available for these dates
+                    </span>
                 </div>
             </div>
         </div>

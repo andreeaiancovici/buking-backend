@@ -1,12 +1,4 @@
-CREATE TABLE property
-(
-    id          BIGINT AUTO_INCREMENT PRIMARY KEY,
-    name        VARCHAR(255),
-    address     VARCHAR(255),
-    description TEXT,
-    star_rating INTEGER,
-    image_url   VARCHAR(1000)
-);
+-- Doar date de test. Tabelele sunt create de Hibernate din entitati (nu adauga CREATE TABLE aici)
 
 INSERT INTO property (name, address, description, star_rating, image_url)
 VALUES ('Hilton Downtown', '123 Main Street, New York', 'Luxury hotel in the heart of Manhattan', 5,
@@ -15,18 +7,6 @@ VALUES ('Hilton Downtown', '123 Main Street, New York', 'Luxury hotel in the hea
         'https://images.unsplash.com/photo-1571896349842-33c89424de2d'),
        ('Mountain Lodge', '789 Pine Avenue, Denver', 'Cozy mountain retreat with spectacular views', 4,
         'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4');
-
-CREATE TABLE room
-(
-    id              BIGINT AUTO_INCREMENT PRIMARY KEY,
-    room_number     VARCHAR(50),
-    room_type       VARCHAR(50),
-    price_per_night DECIMAL(10, 2),
-    capacity        INTEGER,
-    image_url       VARCHAR(1000),
-    property_id     BIGINT,
-    FOREIGN KEY (property_id) REFERENCES property (id)
-);
 
 INSERT INTO room (room_number, room_type, price_per_night, capacity, property_id, image_url)
 VALUES ('101', 'STANDARD', 199.99, 2, 1, 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304'),

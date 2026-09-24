@@ -35,7 +35,35 @@
         </div>
     </div>
 </div>
-<div class="container mt-5">
+
+<div class="container mt-4">
+    <form method="get" action="/properties" class="row g-2 align-items-end">
+        <div class="col-md-3">
+            <label class="form-label">Destination or hotel</label>
+            <input type="text" name="q" class="form-control" th:value="${q}" placeholder="Miami">
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Check-in</label>
+            <input type="date" name="checkIn" class="form-control" th:value="${checkIn}">
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Check-out</label>
+            <input type="date" name="checkOut" class="form-control" th:value="${checkOut}">
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Guests</label>
+            <input type="number" name="guests" min="1" max="8" class="form-control" th:value="${guests}">
+        </div>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-primary w-100">Search</button>
+        </div>
+    </form>
+</div>
+
+<div class="container mt-4">
+    <p class="text-muted" th:if="${#lists.isEmpty(properties)}">
+        No properties available for these dates. Try other dates or fewer guests.
+    </p>
     <div class="row">
         <div class="col-md-4" th:each="property : ${properties}">
             <div class="card mb-4">
@@ -43,11 +71,16 @@
                 <div class="card-body">
                     <h5 class="card-title" th:text="${property.name}">Property Name</h5>
                     <p class="card-text" th:text="${property.address}">Address</p>
+                    <span class="badge bg-warning text-dark mb-2"
+                          th:if="${property.availableRooms <= 5}"
+                          th:text="'Only ' + ${property.availableRooms} + ' room' + (${property.availableRooms} > 1 ? 's' : '') + ' left'">
+                    </span>
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="stars">
                             <span th:each="i : ${#numbers.sequence(1, property.starRating)}">⭐</span>
                         </div>
-                        <a th:href="@{/properties/{id}(id=${property.id})}" class="btn btn-primary">View Details</a>
+                        <a th:href="@{/properties/{id}(id=${property.id}, checkIn=${checkIn}, checkOut=${checkOut}, guests=${guests})}"
+                           class="btn btn-primary">View Details</a>
                     </div>
                 </div>
             </div>

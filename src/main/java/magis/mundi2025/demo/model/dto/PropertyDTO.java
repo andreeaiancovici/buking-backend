@@ -13,4 +13,5 @@ public class PropertyDTO {
     private Integer starRating;
     private String imageUrl;
     private List<RoomDTO> rooms;
+    private Integer availableRooms;
 }
