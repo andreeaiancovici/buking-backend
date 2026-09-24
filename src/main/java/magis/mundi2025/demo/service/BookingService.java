@@ -9,6 +9,7 @@ import magis.mundi2025.demo.repository.BookingRepository;
 import magis.mundi2025.demo.repository.RoomRepository;
 import magis.mundi2025.demo.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -33,6 +34,12 @@ public class BookingService {
                         new RuntimeException("Booking not found"));
     }
 
+    public Room getRoomById(Long roomId) {
+        return roomRepository.findById(roomId)
+                .orElseThrow(() ->
+                        new RuntimeException("Room not found"));
+    }
+
     public boolean isRoomAvailable(
             Long roomId,
             LocalDate checkInDate,
@@ -46,6 +53,7 @@ public class BookingService {
         );
     }
 
+    @Transactional
     public Booking createBooking(
             String name,
             String email,
@@ -54,8 +62,24 @@ public class BookingService {
             LocalDate checkOutDate,
             Integer numberOfGuests) {
 
+        if (name == null || name.isBlank()) {
+            throw new RuntimeException("Name is required");
+        }
+
+        if (email == null || email.isBlank()) {
+            throw new RuntimeException("Email is required");
+        }
+
         if (checkInDate == null || checkOutDate == null) {
-            throw new RuntimeException("Check-in and check-out dates are required");
+            throw new RuntimeException(
+                    "Check-in and check-out dates are required"
+            );
+        }
+
+        if (checkInDate.isBefore(LocalDate.now())) {
+            throw new RuntimeException(
+                    "Check-in date cannot be in the past"
+            );
         }
 
         if (!checkInDate.isBefore(checkOutDate)) {
@@ -87,16 +111,21 @@ public class BookingService {
             );
         }
 
-        User user = userRepository.findByEmail(email)
-                .orElseGet(() -> {
+        String normalizedEmail =
+                email.trim().toLowerCase();
 
-                    User newUser = new User();
+        User user =
+                userRepository
+                        .findByEmailIgnoreCase(normalizedEmail)
+                        .orElseGet(() -> {
 
-                    newUser.setName(name);
-                    newUser.setEmail(email);
+                            User newUser = new User();
 
-                    return userRepository.save(newUser);
-                });
+                            newUser.setName(name.trim());
+                            newUser.setEmail(normalizedEmail);
+
+                            return userRepository.save(newUser);
+                        });
 
         long numberOfNights =
                 ChronoUnit.DAYS.between(
@@ -127,10 +156,5 @@ public class BookingService {
         );
 
         return bookingRepository.save(booking);
-    }
-    public Room getRoomById(Long roomId) {
-        return roomRepository.findById(roomId)
-                .orElseThrow(() ->
-                        new RuntimeException("Room not found"));
     }
 }

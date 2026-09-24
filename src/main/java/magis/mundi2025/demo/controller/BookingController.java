@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import magis.mundi2025.demo.model.entity.Booking;
 import magis.mundi2025.demo.model.entity.Room;
 import magis.mundi2025.demo.service.BookingService;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -21,9 +22,13 @@ public class BookingController {
             @RequestParam Long roomId,
             Model model) {
 
-        Room room = bookingService.getRoomById(roomId);
+        Room room =
+                bookingService.getRoomById(roomId);
 
-        model.addAttribute("room", room);
+        model.addAttribute(
+                "room",
+                room
+        );
 
         return "booking-form";
     }
@@ -33,32 +38,51 @@ public class BookingController {
             @RequestParam String name,
             @RequestParam String email,
             @RequestParam Long roomId,
-            @RequestParam LocalDate checkInDate,
-            @RequestParam LocalDate checkOutDate,
+
+            @RequestParam
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate checkInDate,
+
+            @RequestParam
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+            LocalDate checkOutDate,
+
             @RequestParam Integer numberOfGuests,
             Model model) {
 
         try {
 
-            Booking booking = bookingService.createBooking(
-                    name,
-                    email,
-                    roomId,
-                    checkInDate,
-                    checkOutDate,
-                    numberOfGuests
-            );
+            Booking booking =
+                    bookingService.createBooking(
+                            name,
+                            email,
+                            roomId,
+                            checkInDate,
+                            checkOutDate,
+                            numberOfGuests
+                    );
 
-            model.addAttribute("booking", booking);
+            model.addAttribute(
+                    "booking",
+                    booking
+            );
 
             return "booking-success";
 
         } catch (RuntimeException e) {
 
-            Room room = bookingService.getRoomById(roomId);
+            Room room =
+                    bookingService.getRoomById(roomId);
 
-            model.addAttribute("room", room);
-            model.addAttribute("error", e.getMessage());
+            model.addAttribute(
+                    "room",
+                    room
+            );
+
+            model.addAttribute(
+                    "error",
+                    e.getMessage()
+            );
 
             return "booking-form";
         }

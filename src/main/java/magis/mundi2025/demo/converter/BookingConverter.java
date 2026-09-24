@@ -14,6 +14,8 @@ public class BookingConverter {
         dto.setId(booking.getId());
         dto.setCheckInDate(booking.getCheckInDate());
         dto.setCheckOutDate(booking.getCheckOutDate());
+        dto.setNumberOfGuests(booking.getNumberOfGuests());
+        dto.setTotalPrice(booking.getTotalPrice());
         dto.setStatus(booking.getStatus());
 
         dto.setUserId(booking.getUser().getId());
