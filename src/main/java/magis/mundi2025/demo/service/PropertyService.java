@@ -59,4 +59,11 @@ public class PropertyService {
         booking.setGuests(guests);
         bookingRepository.save(booking);
     }
+    public List<Booking> findBookings(String guestName) {
+        return bookingRepository.findByGuestNameContainingIgnoreCaseOrderByCheckInDesc(guestName);
+    }
+
+    public void cancelBooking(Long bookingId) {
+        bookingRepository.deleteById(bookingId);
+    }
 }
