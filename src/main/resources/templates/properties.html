@@ -4,38 +4,64 @@
     <title>Property List</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        .card-img-top {
-            width: 100%;
-            height: 200px;  /* Fixed height */
-            object-fit: cover;  /* Maintains aspect ratio */
-        }
-
-        .card {
-            height: 100%;  /* Makes all cards same height */
-        }
-
-        .header {
-            background-color: #003580;
-            padding: 16px 0;
-        }
-
-        .logo {
-            color: white;
-            font-size: 24px;
-            font-weight: bold;
-            text-decoration: none;
-        }
+        .card-img-top { width: 100%; height: 200px; object-fit: cover; }
+        .card { height: 100%; }
+        .header { background-color: #003580; padding: 16px 0; }
+        .logo { color: white; font-size: 24px; font-weight: bold; text-decoration: none; }
     </style>
 </head>
 <body>
 <div class="header">
     <div class="container">
-        <div class="d-flex justify-content-between align-items-center">
-            <a href="/" class="logo">Buking.com</a>
-        </div>
+        <a href="/" class="logo">Buking.com</a>
     </div>
 </div>
-<div class="container mt-5">
+
+<div class="container mt-4">
+    <form method="get" th:action="@{/properties}" class="row g-3 align-items-end bg-light p-3 rounded shadow-sm">
+        <div class="col-md-3">
+            <label class="form-label">City / Location</label>
+            <input type="text" class="form-control" name="city" th:value="${city}" placeholder="e.g. Miami">
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Check-in</label>
+            <input type="date" class="form-control" name="checkIn" th:value="${checkIn}">
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Check-out</label>
+            <input type="date" class="form-control" name="checkOut" th:value="${checkOut}">
+        </div>
+        <div class="col-md-1">
+            <label class="form-label">Min ⭐</label>
+            <select class="form-select" name="minRating">
+                <option value="" th:selected="${minRating == null}">Any</option>
+                <option th:each="star : ${#numbers.sequence(1, 5)}"
+                        th:value="${star}" th:text="${star}"
+                        th:selected="${minRating != null and minRating == star}"></option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Price / night</label>
+            <div class="d-flex gap-1">
+                <input type="number" class="form-control" name="minPrice" th:value="${minPrice}" placeholder="Min" min="0">
+                <input type="number" class="form-control" name="maxPrice" th:value="${maxPrice}" placeholder="Max" min="0">
+            </div>
+        </div>
+        <div class="col-md-1">
+            <label class="form-label">Guests</label>
+            <input type="number" class="form-control" name="minCapacity" th:value="${minCapacity}" min="1" placeholder="2">
+        </div>
+        <div class="col-md-1">
+            <button type="submit" class="btn btn-primary w-100">Search</button>
+        </div>
+    </form>
+</div>
+
+<div class="container mt-3" th:if="${#lists.isEmpty(properties)}">
+    <p class="text-muted">No properties match your search.</p>
+</div>
+
+<div class="container mt-3">
     <div class="row">
         <div class="col-md-4" th:each="property : ${properties}">
             <div class="card mb-4">
