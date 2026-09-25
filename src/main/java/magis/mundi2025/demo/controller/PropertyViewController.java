@@ -3,15 +3,16 @@ package magis.mundi2025.demo.controller;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import magis.mundi2025.demo.converter.PropertyConverter;
-import magis.mundi2025.demo.model.entity.Room;
 import magis.mundi2025.demo.service.CurrencyService;
 import magis.mundi2025.demo.service.PropertyService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import magis.mundi2025.demo.model.entity.Property;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -34,20 +35,27 @@ public class PropertyViewController {
             HttpSession session,
             Model model) {
 
-        LocalDate in = checkIn;
-        if (in == null) {
-            in = LocalDate.now();
-        }
+        LocalDate in = checkIn != null ? checkIn : LocalDate.now();
 
+        // NOU: daca checkOut nu e dupa checkIn, aratam eroare in loc sa le interschimbam tacut
+        String dateError = null;
         LocalDate out = checkOut;
-        if (out == null || !out.isAfter(in)) {
+        if (out != null && !out.isAfter(in)) {
+            dateError = "Check-out date must be after check-in date.";
+            out = null;
+        }
+        if (out == null) {
             out = in.plusDays(1);
         }
 
         final LocalDate finalIn = in;
         final LocalDate finalOut = out;
 
-        var propertyDTOs = propertyService.search(q).stream()
+        // NOU: cautam hotelurile inainte de a filtra dupa disponibilitate,
+        // ca sa stim daca lipsa rezultatelor vine din "nu exista" sau din "nu are camere libere"
+        List<Property> matchingProperties = propertyService.search(q);
+
+        var propertyDTOs = matchingProperties.stream()
                 .map(p -> {
                     var dto = propertyConverter.convertToDTO(p);
                     dto.setAvailableRooms(
@@ -62,6 +70,9 @@ public class PropertyViewController {
         model.addAttribute("checkIn", in);
         model.addAttribute("checkOut", out);
         model.addAttribute("guests", guests);
+        model.addAttribute("dateError", dateError);
+        // NOU: adevarat doar daca s-a cautat ceva si nu exista niciun hotel cu numele/adresa aceea
+        model.addAttribute("noMatch", !q.isBlank() && matchingProperties.isEmpty());
 
         addCurrency(currency, session, model);
         return "properties";
@@ -80,28 +91,31 @@ public class PropertyViewController {
             HttpSession session,
             Model model) {
 
-        LocalDate in = checkIn;
-        if (in == null) {
-            in = LocalDate.now();
-        }
+        LocalDate in = checkIn != null ? checkIn : LocalDate.now();
 
+        String dateError = null;
         LocalDate out = checkOut;
-        if (out == null || !out.isAfter(in)) {
+        if (out != null && !out.isAfter(in)) {
+            dateError = "Check-out date must be after check-in date.";
+            out = null;
+        }
+        if (out == null) {
             out = in.plusDays(1);
         }
 
         var property = propertyService.getPropertyById(id);
 
-        Set<Long> availableRoomIds = propertyService.findAvailableRooms(id, in, out, guests)
-                .stream().map(Room::getId).collect(Collectors.toSet());
+        // NOU: camerele ocupate pe acele date (indiferent de capacitate)
+        Set<Long> bookedRoomIds = propertyService.findBookedRoomIds(id, in, out);
 
         model.addAttribute("property", propertyConverter.convertToDTO(property));
-        model.addAttribute("availableRoomIds", availableRoomIds);
+        model.addAttribute("bookedRoomIds", bookedRoomIds);
         model.addAttribute("checkIn", in);
         model.addAttribute("checkOut", out);
         model.addAttribute("guests", guests);
         model.addAttribute("booked", booked);
         model.addAttribute("error", error);
+        model.addAttribute("dateError", dateError);
 
         addCurrency(currency, session, model);
         return "property-details";
@@ -129,7 +143,6 @@ public class PropertyViewController {
 
     // ---------- Moneda si cursul pentru pagina ----------
     private void addCurrency(String requested, HttpSession session, Model model) {
-
         if (requested != null) {
             session.setAttribute("currency", requested);
         }
@@ -141,7 +154,6 @@ public class PropertyViewController {
         model.addAttribute("rate", currencyService.getRate(chosen));
         model.addAttribute("currencies", CurrencyService.SUPPORTED);
 
-        // Daca nu am putut folosi moneda dorita, pagina spune si de ce
         if (wanted != null && !wanted.equals(chosen)) {
             model.addAttribute("currencyNote",
                     "Could not use " + wanted + " (reason: " + currencyService.getLastMessage()

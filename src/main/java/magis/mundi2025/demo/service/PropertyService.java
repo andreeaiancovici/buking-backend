@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -42,10 +44,18 @@ public class PropertyService {
         return findAvailableRooms(propertyId, in, out, guests).size();
     }
 
+    // NOU: camerele ocupate pe acele date, indiferent de capacitate
+    public Set<Long> findBookedRoomIds(Long propertyId, LocalDate in, LocalDate out) {
+        return new HashSet<>(roomRepository.findBookedRoomIds(propertyId, in, out));
+    }
+
     @Transactional
     public void book(Long roomId, LocalDate in, LocalDate out, String guestName, int guests) {
-        Room room = roomRepository.findById(roomId)
+        // NOU: findByIdForUpdate blocheaza randul camerei pana la finalul acestei metode,
+        // ca doua rezervari simultane sa nu treaca amandoua de verificare
+        Room room = roomRepository.findByIdForUpdate(roomId)
                 .orElseThrow(() -> new RuntimeException("Room not found"));
+
         boolean free = findAvailableRooms(room.getProperty().getId(), in, out, guests)
                 .stream().anyMatch(r -> r.getId().equals(roomId));
         if (!free) {

@@ -12,11 +12,9 @@ INSERT INTO room (room_number, room_type, price_per_night, capacity, property_id
 VALUES ('101', 'STANDARD', 199.99, 2, 1, 'https://images.unsplash.com/photo-1631049307264-da0ec9d70304'),
        ('102', 'DELUXE', 299.99, 2, 1, 'https://images.unsplash.com/photo-1618773928121-c32242e63f39'),
        ('201', 'SUITE', 499.99, 4, 1, 'https://images.unsplash.com/photo-1590490360182-c33d57733427'),
-
        ('A101', 'OCEAN VIEW', 259.99, 2, 2, 'https://images.unsplash.com/photo-1582719508461-905c673771fd'),
        ('A102', 'BEACH FRONT', 359.99, 3, 2, 'https://images.unsplash.com/photo-1566665797739-1674de7a421a'),
        ('B201', 'FAMILY SUITE', 459.99, 5, 2, 'https://images.unsplash.com/photo-1616594039964-ae9021a400a0'),
-
        ('L1', 'CABIN', 199.99, 2, 3, 'https://images.unsplash.com/photo-1602002418082-a4443e081dd1'),
        ('L2', 'LUXURY CABIN', 299.99, 4, 3, 'https://images.unsplash.com/photo-1598928506311-c55ded91a20c'),
        ('L3', 'MOUNTAIN SUITE', 399.99, 6, 3, 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461');

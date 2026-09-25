@@ -18,7 +18,6 @@
             <div class="d-flex align-items-center gap-3">
                 <a href="/bookings" style="color: white; text-decoration: none;">My bookings</a>
 
-                <!-- Alegerea monedei: formular GET care pastreaza restul datelor din pagina -->
                 <form method="get" class="d-flex gap-1 m-0">
                     <input type="hidden" name="q" th:value="${q}">
                     <input type="hidden" name="checkIn" th:value="${checkIn}">
@@ -62,11 +61,20 @@
     </form>
 </div>
 
+<!-- Eroare de date (check-out inainte de check-in) -->
+<div class="container mt-2">
+    <div class="alert alert-danger" th:if="${dateError}" th:text="${dateError}"></div>
+</div>
+
 <!-- Lista de hoteluri -->
 <div class="container mt-4">
-    <p class="text-muted" th:if="${#lists.isEmpty(properties)}">
+    <p class="text-muted" th:if="${noMatch}">
+        No properties found for "<span th:text="${q}"></span>". Check the spelling or try another destination.
+    </p>
+    <p class="text-muted" th:if="${!noMatch and #lists.isEmpty(properties)}">
         No properties available for these dates. Try other dates or fewer guests.
     </p>
+
     <div class="row">
         <div class="col-md-4" th:each="property : ${properties}">
             <div class="card mb-4">
@@ -75,7 +83,6 @@
                     <h5 class="card-title" th:text="${property.name}">Property Name</h5>
                     <p class="card-text" th:text="${property.address}">Address</p>
 
-                    <!-- Badge cu numarul real de camere ramase (apare doar cand sunt 5 sau mai putine) -->
                     <span class="badge bg-warning text-dark mb-2"
                           th:if="${property.availableRooms == 1}">
                         Only 1 room left
