@@ -35,14 +35,25 @@
         </div>
     </div>
 </div>
+
 <div class="container mt-5">
-    <div class="row">
-        <div class="col-md-4" th:each="property : ${properties}">
-            <div class="card mb-4">
+
+    <!-- Bara de Căutare Nouă -->
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <input type="text" id="searchInput" class="form-control form-control-lg shadow-sm" placeholder="🔍 Caută destinații, hoteluri sau adrese...">
+        </div>
+    </div>
+
+    <!-- Lista de Proprietăți -->
+    <div class="row" id="propertyList">
+        <!-- Am adăugat clasa 'property-item' pentru a fi recunoscută ușor de JavaScript -->
+        <div class="col-md-4 property-item" th:each="property : ${properties}">
+            <div class="card mb-4 shadow-sm">
                 <img th:src="${property.imageUrl}" class="card-img-top" alt="Property Image">
                 <div class="card-body">
-                    <h5 class="card-title" th:text="${property.name}">Property Name</h5>
-                    <p class="card-text" th:text="${property.address}">Address</p>
+                    <h5 class="card-title property-name" th:text="${property.name}">Property Name</h5>
+                    <p class="card-text property-address" th:text="${property.address}">Address</p>
                     <div class="d-flex justify-content-between align-items-center">
                         <div class="stars">
                             <span th:each="i : ${#numbers.sequence(1, property.starRating)}">⭐</span>
@@ -54,5 +65,30 @@
         </div>
     </div>
 </div>
+
+<!-- Scriptul pentru Live Search -->
+<script>
+    document.getElementById('searchInput').addEventListener('keyup', function() {
+        // Preluăm ce a scris utilizatorul și transformăm în litere mici
+        let filter = this.value.toLowerCase();
+
+        // Luăm toate coloanele care conțin cardurile (le-am pus clasa property-item)
+        let cards = document.querySelectorAll('.property-item');
+
+        cards.forEach(function(card) {
+            // Extragem textul din titlu și adresă pentru fiecare card în parte
+            let name = card.querySelector('.property-name').textContent.toLowerCase();
+            let address = card.querySelector('.property-address').textContent.toLowerCase();
+
+            // Dacă textul căutat se regăsește în nume sau adresă, afișăm cardul, altfel îl ascundem
+            if (name.includes(filter) || address.includes(filter)) {
+                card.style.display = '';
+            } else {
+                card.style.display = 'none';
+            }
+        });
+    });
+</script>
+
 </body>
 </html>

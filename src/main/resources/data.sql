@@ -40,3 +40,36 @@ VALUES ('101', 'STANDARD', 199.99, 2, 1, 'https://images.unsplash.com/photo-1631
        ('L1', 'CABIN', 199.99, 2, 3, 'https://images.unsplash.com/photo-1602002418082-a4443e081dd1'),
        ('L2', 'LUXURY CABIN', 299.99, 4, 3, 'https://images.unsplash.com/photo-1598928506311-c55ded91a20c'),
        ('L3', 'MOUNTAIN SUITE', 399.99, 6, 3, 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461');
+CREATE TABLE users
+(
+    id         BIGINT AUTO_INCREMENT PRIMARY KEY,
+    first_name VARCHAR(100),
+    last_name  VARCHAR(100),
+    email      VARCHAR(255) UNIQUE NOT NULL,
+    password   VARCHAR(255) NOT NULL,
+    role       VARCHAR(50) DEFAULT 'CLIENT'
+);
+
+INSERT INTO users (first_name, last_name, email, password, role)
+VALUES ('Ion', 'Popescu', 'ion.popescu@example.com', '$2a$10$w8...hashed_password_1...', 'CLIENT'),
+       ('Maria', 'Ionescu', 'maria.ionescu@example.com', '$2a$10$x9...hashed_password_2...', 'CLIENT'),
+       ('Admin', 'Sistem', 'admin@bookingclone.com', '$2a$10$z1...hashed_password_3...', 'ADMIN');
+
+
+CREATE TABLE booking
+(
+    id             BIGINT AUTO_INCREMENT PRIMARY KEY,
+    check_in_date  DATE,
+    check_out_date DATE,
+    total_price    DECIMAL(10, 2),
+    status         VARCHAR(50),
+    user_id        BIGINT,
+    room_id        BIGINT,
+    FOREIGN KEY (user_id) REFERENCES users (id),
+    FOREIGN KEY (room_id) REFERENCES room (id)
+);
+
+INSERT INTO booking (check_in_date, check_out_date, total_price, status, user_id, room_id)
+VALUES ('2026-10-15', '2026-10-20', 999.95, 'CONFIRMED', 1, 1),   -- Ion a rezervat Room 101 pentru 5 nopți
+       ('2026-11-01', '2026-11-05', 1439.96, 'CONFIRMED', 2, 5),  -- Maria a rezervat A102 (Beach Front) pentru 4 nopți
+       ('2026-12-24', '2026-12-28', 1599.96, 'PENDING', 1, 9);    -- Ion a rezervat L3 (Mountain Suite) de Crăciun

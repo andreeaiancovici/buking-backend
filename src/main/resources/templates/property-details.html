@@ -25,12 +25,14 @@
             border: 1px solid #e7e7e7;
             margin-bottom: 20px;
             padding: 20px;
+            border-radius: 8px; /* Extra finisaj */
         }
 
         .room-image {
-            width: 200px;
+            width: 100%; /* Adaptat pentru a se încadra mai bine în coloană */
             height: 150px;
             object-fit: cover;
+            border-radius: 4px;
         }
 
         .star-rating {
@@ -59,35 +61,158 @@
 
 <div class="container mt-4">
     <div class="row">
+        <!-- Coloana din stânga: Imagine și Descriere -->
         <div class="col-md-8">
-            <img th:src="${property.imageUrl}" class="img-fluid mb-4" alt="Property Image">
+            <img th:src="${property.imageUrl}" class="img-fluid mb-4 rounded" alt="Property Image" style="max-height: 400px; width: 100%; object-fit: cover;">
             <h3>About this property</h3>
             <p th:text="${property.description}">Description</p>
-        </div>
-    </div>
 
-    <h3 class="mt-4">Available Rooms</h3>
-    <div class="room-list">
-        <div th:each="room : ${property.rooms}" class="room-card">
-            <div class="row">
-                <div class="col-md-3">
-                    <img th:src="${room.imageUrl}" class="room-image" alt="Room Image">
-                </div>
-                <div class="col-md-6">
-                    <h4 th:text="${room.roomType}">Room Type</h4>
-                    <p>Room Number: <span th:text="${room.roomNumber}"></span></p>
-                    <p>Capacity: <span th:text="${room.capacity}"></span> guests</p>
-                </div>
-                <div class="col-md-3 text-end">
-                    <div class="price-tag">
-                        <h3 th:text="${'€' + room.pricePerNight}">Price</h3>
-                        <p>per night</p>
+            <h3 class="mt-5">Available Rooms</h3>
+            <div class="room-list">
+                <div th:each="room : ${property.rooms}" class="room-card shadow-sm">
+                    <div class="row align-items-center">
+                        <div class="col-md-4">
+                            <img th:src="${room.imageUrl}" class="room-image" alt="Room Image">
+                        </div>
+                        <div class="col-md-5">
+                            <h4 th:text="${room.roomType}">Room Type</h4>
+                            <p class="mb-1 text-muted">Room Number: <span th:text="${room.roomNumber}"></span></p>
+                            <p class="mb-0 text-muted">Capacity: <span th:text="${room.capacity}"></span> guests</p>
+                        </div>
+                        <div class="col-md-3 text-end">
+                            <div class="price-tag">
+                                <h3 th:text="${'€' + room.pricePerNight}" class="mb-0 text-primary">Price</h3>
+                                <small class="text-muted">per night</small>
+                            </div>
+                        </div>
                     </div>
-                    <!--<button class="btn btn-primary">Book Now</button>-->
+                </div>
+            </div>
+        </div>
+
+        <!-- Coloana din dreapta: Formularul de Rezervare -->
+        <div class="col-md-4">
+            <div class="card shadow border-0 position-sticky" style="top: 20px;">
+                <div class="card-body p-4">
+                    <h4 class="card-title mb-4">Rezervă o cameră</h4>
+
+                    <form th:action="@{/book}" method="post">
+
+                        <!-- Câmp nou: Numele Clientului -->
+                        <div class="mb-3">
+                            <label for="guestName" class="form-label fw-bold">Numele complet</label>
+                            <input type="text" class="form-control" id="guestName" name="guestName" placeholder="Ex: Ion Popescu" required>
+                        </div>
+
+                        <!-- Selectare Cameră -->
+                        <div class="mb-3">
+                            <label for="roomId" class="form-label fw-bold">Alege tipul camerei</label>
+                            <select class="form-select" id="roomId" name="roomId" required>
+                                <option value="" data-price="0">-- Selectează o cameră --</option>
+                                <option th:each="room : ${property.rooms}"
+                                        th:value="${room.id}"
+                                        th:data-price="${room.pricePerNight}"
+                                        th:text="${room.roomType + ' - €' + room.pricePerNight + ' / noapte'}">
+                                </option>
+                            </select>
+                        </div>
+
+                        <!-- Date Check-in -->
+                        <div class="mb-3">
+                            <label for="checkIn" class="form-label fw-bold">Check-in</label>
+                            <input type="date" class="form-control" id="checkIn" name="checkIn" required>
+                        </div>
+
+                        <!-- Date Check-out -->
+                        <div class="mb-4">
+                            <label for="checkOut" class="form-label fw-bold">Check-out</label>
+                            <input type="date" class="form-control" id="checkOut" name="checkOut" required>
+                        </div>
+
+                        <!-- ID User Ascuns (temporar) -->
+                        <input type="hidden" name="userId" value="1">
+
+                        <!-- Buton Submit -->
+                        <button type="submit" class="btn btn-primary w-100 fw-bold py-2" style="background-color: #0071c2; border-color: #0071c2;">
+                            Book now
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<!-- Scriptul de Validare și Salvare (actualizat cu prinderea erorii reale din backend) -->
+<script>
+    const form = document.querySelector('form');
+
+    form.addEventListener('submit', function(event) {
+        // 1. Oprim trimiterea standard a formularului care te-ar muta pe /book
+        event.preventDefault();
+
+        // 2. Preluăm datele introduse de utilizator
+        const guestName = document.getElementById('guestName').value;
+        const checkInInput = document.getElementById('checkIn').value;
+        const checkOutInput = document.getElementById('checkOut').value;
+        const roomSelect = document.getElementById('roomId');
+
+        const checkInDate = new Date(checkInInput);
+        const checkOutDate = new Date(checkOutInput);
+
+        // Luăm data curentă și o setăm la miezul nopții pentru o comparație corectă
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        // 3. VALIDĂRI
+        if (checkInDate < today) {
+            alert("❌ Data de check-in nu poate fi în trecut!");
+            return; // Oprim funcția aici
+        }
+
+        if (checkOutDate <= checkInDate) {
+            alert("❌ Data de plecare (check-out) trebuie să fie DUPĂ data de check-in!");
+            return; // Oprim funcția aici
+        }
+
+        // 4. TRIMITEM DATELE LA BACKEND
+        const formData = new FormData(form);
+        fetch('/book', {
+            method: 'POST',
+            body: formData
+        }).then(async response => {
+            if (response.ok) {
+                // Dacă Backend-ul zice OK, preluăm JSON-ul trimis de Controller
+                return response.json();
+            } else {
+                // EXTRAGEM EROAREA REALĂ de la Spring Boot
+                const errorText = await response.text();
+                throw new Error(errorText);
+            }
+        }).then(bookingData => {
+
+            // 5. AFIȘARE POP-UP SUCCES CU LINK
+            const oldAlert = document.getElementById('successAlert');
+            if(oldAlert) oldAlert.remove();
+
+            const successDiv = document.createElement('div');
+            successDiv.id = 'successAlert';
+            successDiv.className = 'alert alert-success mt-3';
+            successDiv.innerHTML = `🎉 Rezervarea pentru <strong>${guestName}</strong> s-a realizat cu succes!<br>
+                                    Dacă dorești să vizualizezi datele intră <a href="/booking/${bookingData.id}" class="alert-link fw-bold">aici</a>.`;
+
+            form.appendChild(successDiv);
+
+            // Golim formularul
+            form.reset();
+
+        }).catch(error => {
+            console.error('Eroare de conexiune cu serverul:', error);
+            // Afișăm în alertă motivul exact pentru care a crăpat!
+            alert("Eroare de la server: " + error.message);
+        });
+    });
+</script>
+
 </body>
 </html>
