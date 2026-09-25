@@ -30,6 +30,13 @@ public class BookingService {
         Room room = roomRepository.findById(roomId)
                 .orElseThrow(() -> new RuntimeException("Camera nu a fost găsită!"));
 
+        // === PROTECȚIA ANTI DOUBLE-BOOKING ===
+        int overlapping = bookingRepository.countOverlappingBookings(roomId, checkIn, checkOut);
+        if (overlapping > 0) {
+            throw new RuntimeException("Ne pare rău, dar această cameră este deja rezervată în perioada selectată! Te rugăm să alegi alte date.");
+        }
+        // =====================================
+
         long nights = ChronoUnit.DAYS.between(checkIn, checkOut);
 
         Booking booking = new Booking();
