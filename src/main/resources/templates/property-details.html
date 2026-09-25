@@ -2,7 +2,10 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title th:text="${property.name}">Property Details</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+          rel="stylesheet">
+
     <style>
         .header {
             background-color: #003580;
@@ -39,55 +42,133 @@
         }
     </style>
 </head>
+
 <body>
+
 <div class="header">
     <div class="container">
-        <div class="d-flex justify-content-between align-items-center">
-            <a href="/" class="logo">Buking.com</a>
-        </div>
+
+        <a th:href="@{/properties}"
+           class="logo">
+            Buking.com
+        </a>
+
     </div>
 </div>
+
+
 <div class="property-header">
+
     <div class="container">
-        <h1 th:text="${property.name}">Property Name</h1>
+
+        <h1 th:text="${property.name}">
+            Property Name
+        </h1>
+
         <div class="star-rating">
-            <span th:each="i : ${#numbers.sequence(1, property.starRating)}">⭐</span>
+            <span th:each="i : ${#numbers.sequence(1, property.starRating)}">
+                ⭐
+            </span>
         </div>
-        <p th:text="${property.address}" class="mb-2">Address</p>
+
+        <p th:text="${property.address}">
+            Address
+        </p>
+
     </div>
+
 </div>
+
 
 <div class="container mt-4">
+
     <div class="row">
+
         <div class="col-md-8">
-            <img th:src="${property.imageUrl}" class="img-fluid mb-4" alt="Property Image">
+
+            <img th:src="${property.imageUrl}"
+                 class="img-fluid mb-4"
+                 alt="Property Image">
+
             <h3>About this property</h3>
-            <p th:text="${property.description}">Description</p>
+
+            <p th:text="${property.description}">
+                Description
+            </p>
+
         </div>
+
     </div>
 
-    <h3 class="mt-4">Available Rooms</h3>
+
+    <h3 class="mt-4">
+        Available Rooms
+    </h3>
+
+
     <div class="room-list">
-        <div th:each="room : ${property.rooms}" class="room-card">
+
+        <div th:each="room : ${property.rooms}"
+             class="room-card">
+
             <div class="row">
+
                 <div class="col-md-3">
-                    <img th:src="${room.imageUrl}" class="room-image" alt="Room Image">
+
+                    <img th:src="${room.imageUrl}"
+                         class="room-image"
+                         alt="Room Image">
+
                 </div>
+
+
                 <div class="col-md-6">
-                    <h4 th:text="${room.roomType}">Room Type</h4>
-                    <p>Room Number: <span th:text="${room.roomNumber}"></span></p>
-                    <p>Capacity: <span th:text="${room.capacity}"></span> guests</p>
+
+                    <h4 th:text="${room.roomType}">
+                        Room Type
+                    </h4>
+
+                    <p>
+                        Room Number:
+                        <span th:text="${room.roomNumber}">
+                        </span>
+                    </p>
+
+                    <p>
+                        Capacity:
+                        <span th:text="${room.capacity}">
+                        </span>
+                        guests
+                    </p>
+
                 </div>
+
+
                 <div class="col-md-3 text-end">
-                    <div class="price-tag">
-                        <h3 th:text="${'€' + room.pricePerNight}">Price</h3>
-                        <p>per night</p>
-                    </div>
-                    <!--<button class="btn btn-primary">Book Now</button>-->
+
+                    <h3 th:text="${'€' + room.pricePerNight}">
+                        Price
+                    </h3>
+
+                    <p>per night</p>
+
+
+                    <a th:href="@{/bookings/new(roomId=${room.id})}"
+                       class="btn btn-primary w-100">
+
+                        Book Now
+
+                    </a>
+
                 </div>
+
             </div>
+
         </div>
+
     </div>
+
 </div>
+
 </body>
 </html>
